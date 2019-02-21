@@ -80,10 +80,13 @@ function linter() {
      */
     function transform(message) {
         return {
-          'type': 'Error',
-          'html': toHTML(message.reason),
-          'filePath': this.getPath(),
-          'range': toRange(message.location)
+          'severity': 'error',
+          'excerpt': message.reason,
+          'description': toHTML(message.reason),
+          'location': {
+            'file': this.getPath(),
+            'position': toRange(message.location)
+          }
       };
     }
 
@@ -99,7 +102,9 @@ function linter() {
      * @return {Promise.<Message, Error>} - Promise
      *  resolved with a list of linter-errors or an error.
      */
-    function onchange(editor) {
+
+    function onchange() {
+        var editor = atom.workspace.getActiveTextEditor();
         var settings = config.get('linter-rorybot');
 
         if (minimatch(editor.getPath(), settings.ignoreFiles)) {
@@ -125,11 +130,13 @@ function linter() {
     }
 
     return {
-        'grammarScopes': config.get('linter-rorybot').grammars,
-        'name': 'rorybot',
-        'scope': 'file',
-        'lintOnFly': true,
-        'lint': onchange
+        grammarScopes: config.get('linter-rorybot').grammars,
+        name: 'rorybot',
+        scope: 'file',
+        lintsOnChange: true,
+        lint() {
+          return onchange();
+        }
     };
 }
 
