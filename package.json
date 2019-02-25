@@ -26,6 +26,10 @@
     {
       "name": "Zachary Kain",
       "email": "zachary.kain@shopify.com"
+    },
+    {
+      "name": "Greg Dodd",
+      "email": "greg.dodd@shopify.com"
     }
   ],
   "main": "index.js",
