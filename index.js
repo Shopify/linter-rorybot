@@ -98,7 +98,8 @@ function linter() {
    */
 
   function onchange() {
-    let editor
+    let editor;
+    let messages = [];
     if(editor = atom.workspace.getActiveTextEditor()) {
       var settings = config.get('linter-rorybot');
 
@@ -107,8 +108,6 @@ function linter() {
       }
 
       return new Promise(function (resolve, reject) {
-        var messages;
-
         if (!rorybot) {
           rorybot = require('rorybot');
         }
@@ -117,10 +116,8 @@ function linter() {
           messages = rorybot(editor.getText()).messages;
         } catch (e) {
           reject(e);
-          return;
         }
-
-        resolve((messages || []).map(transform, editor));
+        resolve(messages.map(transform, editor));
       });
     }
   }
@@ -131,7 +128,7 @@ function linter() {
     scope: 'file',
     lintsOnChange: true,
     lint() {
-      return onchange();
+      return onchange() || [];
     }
   };
 }
@@ -148,7 +145,7 @@ module.exports = {
       'default': ''
     },
     'grammars': {
-      'description': 'List of scopes for languages which will be ' +
+      'description': 'List of scopes for languages which are ' +
         'checked. Note: setting new sources overwrites the ' +
         'defaults.',
       'type': 'array',
