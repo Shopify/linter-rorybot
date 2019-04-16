@@ -1,6 +1,6 @@
 {
   "name": "linter-rorybot",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Atom linter plugin using rorybot to catch Shopify style guide violations",
   "license": "MIT",
   "homepage": "https://github.com/Shopify/linter-rorybot",
@@ -37,11 +37,11 @@
     "index.js"
   ],
   "engines": {
-    "atom": ">=1.0.0 <2.0.0"
+    "atom": ">=1.4.0 <2.0.0"
   },
   "dependencies": {
     "rorybot": "^1.0.0",
-    "atom-package-deps": "^3.0.0",
+    "atom-package-deps": "^5.0.0",
     "minimatch": "^3.0.0"
   },
   "package-deps": [
@@ -55,19 +55,17 @@
     }
   },
   "devDependencies": {
-    "eslint": "^1.1.0",
-    "jscs": "^2.1.0",
-    "jscs-jsdoc": "^1.1.0",
-    "remark": "^3.0.0",
-    "remark-comment-config": "^2.0.0",
+    "eslint": "^5.1.0",
+    "remark": "^10.0.0",
+    "remark-comment-config": "^5.0.0",
     "remark-github": "^4.0.0",
-    "remark-lint": "^2.0.0",
+    "remark-lint": "^6.0.0",
     "remark-slug": "^4.0.0",
-    "remark-validate-links": "^2.0.0"
+    "remark-validate-links": "^2.0.0",
+    "retext-simplify": "^4.0.0"
   },
   "scripts": {
     "lint-api": "eslint .",
-    "lint-style": "jscs --reporter inline .",
     "lint": "npm run lint-api && npm run lint-style",
     "build-md": "remark . --quiet",
     "build": "npm run build-md",

@@ -1,53 +1,28 @@
 /**
- * @author Adam Hollett and Jeremy Hanson-Finger
- * @copyright 2016 Shopify
- * @license MIT
- * @module atom:linter:rorybot
- * @fileoverview Linter.
+ * author: Adam Hollett and Jeremy Hanson-Finger
+ * copyright: 2016 Shopify
+ * license: MIT
+ * module: atom:linter:rorybot
+ * fileoverview: Linter.
  */
-
-/* global atom */
-/* eslint-env node */
 
 'use strict';
 
-/*
- * Dependencies (rorybot is lazy-loaded later).
- */
+// Initialize contants
+const config = atom.config;
+const deps = require('atom-package-deps');
+const minimatch = require('minimatch');
+const rorybot = require('rorybot');
 
-var deps = require('atom-package-deps');
-var minimatch = require('minimatch');
-var rorybot;
+const CODE_EXPRESSION = /`([^`]+)`/g;
 
-/*
- * Constants.
- */
-
-var config = atom.config;
-
-/**
- * Activate.
- */
 function activate() {
   deps.install('linter-rory');
 }
 
-/**
- * Atom meets rorybot to catch insensitive, inconsiderate
- * writing.
- *
- * @return {LinterConfiguration} - Configuration.
- */
 function linter() {
-  var CODE_EXPRESSION = /`([^`]+)`/g;
 
-  /**
-   * Transform a (stringified) vfile range to a linter
-   * nested-tuple.
-   *
-   * @param {Object} location - Positional information.
-   * @return {Array.<Array.<number>>} - Linter range.
-   */
+  // Return word range for highlighting
   function toRange(location) {
     return [[
       Number(location.start.line) - 1,
@@ -58,68 +33,17 @@ function linter() {
     ]];
   }
 
-  /**
-   * Transform a reason for warning from rorybot into
-   * pretty HTML.
-   *
-   * @param {string} reason - Messsage in plain-text.
-   * @return {string} - Messsage in HTML.
-   */
-  function toHTML(reason) {
-    return reason.replace(CODE_EXPRESSION, '<code>$1</code>');
-  }
-
-  /**
-   * Transform VFile messages
-   * nested-tuple.
-   *
-   * @see https://github.com/wooorm/vfile#vfilemessage
-   *
-   * @param {VFileMessage} message - Virtual file error.
-   * @return {Object} - Linter error.
-   */
-  function transform(message) {
+  // Transform VFile messages into linter messages
+  function transform(message, editorPath) {
     return {
-      'severity': 'error',
-      'excerpt': message.reason,
-      'description': toHTML(message.reason),
-      'location': {
-        'file': this.getPath(),
-        'position': toRange(message.location)
+      severity: 'error',
+      excerpt: message.reason,
+      description: message.reason,
+      location: {
+        file: editorPath,
+        position: toRange(message.location)
       }
     };
-  }
-
-  /**
-   * Handle on-the-fly or on-save (depending on the
-   * global atom-linter settings) events. Yeah!
-   *
-   * Loads `rorybot` on first invocation.
-   */
-
-  function onchange() {
-    let editor;
-    let messages = [];
-    if(editor = atom.workspace.getActiveTextEditor()) {
-      var settings = config.get('linter-rorybot');
-
-      if (minimatch(editor.getPath(), settings.ignoreFiles)) {
-        return [];
-      }
-
-      return new Promise(function (resolve, reject) {
-        if (!rorybot) {
-          rorybot = require('rorybot');
-        }
-
-        try {
-          messages = rorybot(editor.getText()).messages;
-        } catch (e) {
-          reject(e);
-        }
-        resolve(messages.map(transform, editor));
-      });
-    }
   }
 
   return {
@@ -127,29 +51,34 @@ function linter() {
     name: 'rorybot',
     scope: 'file',
     lintsOnChange: true,
-    lint() {
-      return onchange() || [];
+    lint(textEditor) {
+      const editorPath = textEditor.getPath();
+      let settings = config.get('linter-rorybot');
+
+      if (minimatch(editorPath, settings.ignoreFiles)) {
+        return [];
+      }
+      return new Promise(function (resolve) {
+        resolve(rorybot(textEditor.getText()).messages.map((message) => transform(message, editorPath)));
+      });
     }
   };
 }
 
-/*
- * Expose.
- */
-
+// Export module
 module.exports = {
-  'config': {
-    'ignoreFiles': {
-      'description': 'Disable files matching (minimatch) glob',
-      'type': 'string',
-      'default': ''
+  config: {
+    ignoreFiles: {
+      description: 'Disable files matching (minimatch) glob',
+      type: 'string',
+      default: ''
     },
-    'grammars': {
-      'description': 'List of scopes for languages which are ' +
+    grammars: {
+      description: 'List of scopes for languages which will be ' +
         'checked. Note: setting new sources overwrites the ' +
         'defaults.',
-      'type': 'array',
-      'default': [
+      type: 'array',
+      default: [
         'source.gfm',
         'text.html.basic',
         'text.html.ruby',
@@ -157,6 +86,6 @@ module.exports = {
       ]
     }
   },
-  'provideLinter': linter,
-  'activate': activate
+  provideLinter: linter,
+  activate: activate
 };
