@@ -1,3 +1,6 @@
+> This repository is no longer maintained. It has been archived and receives no updates or
+> security fixes.
+
 ![linter-rorybot Atom package](linter-rorybot.gif)
 
 # linter-rorybot
